@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="assets/edt.js"></script>
+    <script src="https://unpkg.com/merge-images"></script>
+    <script src="https://unpkg.com/moment"></script>
+
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fredoka One">
+</head>
+
+<body>
+    <script>
+        const week = ["B", "A"][(moment().week() - 1) % 2];
+        const day = moment().format("dddd").toLowerCase();
+
+        let freeRooms = [];
+
+        for (const room in edt) {
+            let free = true;
+
+            for (const time in edt[room][week][day]) {
+                startTime = moment(`${moment().format("YYYY-MM-DD")} ${edt[room][week][day][time][0]}`);
+                endTime = moment(`${moment().format("YYYY-MM-DD")} ${edt[room][week][day][time][1]}`);
+
+                if (moment().isBetween(startTime, endTime)) {
+                    free = false;
+                }
+            }
+
+            if (free) freeRooms.push(edt[room].name);
+        }
+
+        let imagesPath = ["assets/images/Base.png"];
+        freeRooms.forEach(room => {
+            imagesPath.push(`assets/images/${room}.png`);
+        });
+
+        mergeImages(imagesPath)
+            .then(b64 => {
+                document.querySelector('img').src = b64;
+                document.querySelector('img').alt = `${(freeRooms.length > 1) ? "Salles disponibles" : "Salle disponible"} : ${(freeRooms.length != 0) ? freeRooms.join(", ") : "aucune"}`;
+            });
+    </script>
+
+    <h1>SALLES LIBRES</h1>
+    <img src="" alt="">
+
+    <p>Les données sont ici à titre informatif et les disponibilités réelles ne sont pas garanties.</p>
+</body>
+
+</html>
